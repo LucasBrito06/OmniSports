@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stamen Toner Lite Map with Leaflet</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 100vh; /* Ensure the map takes the full height of the viewport */
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Step 1: Initialize the Map
+        const map = L.map('map', {
+            center: [-22.9068, -43.1729], // Rio de Janeiro coordinates
+            zoom: 12
+        });
+
+        // Step 2: Add Stamen Toner Lite Tile Layer
+        L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png', {
+            maxZoom: 20,
+            attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under ODbL.'
+        }).addTo(map);
+
+        // Step 3: Define Marker Locations and Their Types
+        const sportsLocations = [
+            { name: 'Academia Vila', type: 'Gym', position: [-22.908, -43.176] },
+            { name: 'Praia do Leblon', type: 'Beach', position: [-22.9838, -43.2165] },
+            { name: 'Clube Flamengo', type: 'Club', position: [-22.9501, -43.1729] },
+            { name: 'Maracanã', type: 'Field', position: [-22.9121, -43.2302] },
+            { name: 'Quadra Tijuca', type: 'Court', position: [-22.921, -43.229] }
+        ];
+
+        // Step 4: Add Markers to the Map
+        const markerColors = {
+            Gym: 'blue',
+            Court: 'red',
+            Beach: 'orange',
+            Field: 'green',
+            Club: 'black'
+        };
+
+        sportsLocations.forEach(location => {
+            const markerColor = markerColors[location.type] || "yellow";
+            const customIcon = L.icon({
+                iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${markerColor}.png`,
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+                shadowSize: [41, 41]
+            });
+
+            L.marker(location.position, { icon: customIcon })
+                .bindPopup(`<b>${location.name}</b><br>Type: ${location.type}`)
+                .addTo(map);
+        });
+
+        // Step 5: Show User's Current Location
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+                map.setView([userLat, userLng], 13);
+
+                L.marker([userLat, userLng])
+                    .bindPopup('<b>You are here!</b>')
+                    .addTo(map);
+            });
+        }
+    </script>
+</body>
+</html>
