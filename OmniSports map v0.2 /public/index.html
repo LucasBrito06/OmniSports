@@ -3,40 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sports Locator Prototype</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet-ui@latest/dist/leaflet-ui.js"></script>
-
+    <title>Leaflet Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #map {
-            height: 100%;
-            width: 100%;
-        }
-        
-        
-        @media only screen and (min-width: 768px) {
-            #map {
-                height: 90vh;
-                width: 90vw; 
-                margin: 0 auto;
-            }
-        }
+        #map { height: 600px; }
+        #controls { margin: 10px; }
     </style>
-    
 </head>
 <body>
-    <div id="map"></div>
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <div id="controls">
+        <div style="padding: 10px; text-align: center;">
+            <input
+                type="text"
+                id="search-box"
+                placeholder="Search for a location (e.g., Gym, Beach)"
+                style="width: 300px; padding: 5px;"
+            />
+        </div>
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="map.js"></script>
 </body>
 </html>
