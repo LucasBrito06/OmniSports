@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omnisport</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        /* General page styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Pages container */
+        .page {
+            display: none; /* Hide all pages by default */
+            width: 100%;
+            height: 100%;
+        }
+
+        .page.active {
+            display: flex; /* Show only the active page */
+            flex-direction: column;
+        }
+
+        /* Header styling */
+        header {
+            background-color: #272727;
+            color: #1DB954;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        header .title {
+            flex: 1;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        header button {
+            background-color: transparent;
+            color: #1DB954;
+            border: 1px solid #1DB954;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        header button:hover {
+            background-color: #1DB954;
+            color: #121212;
+        }
+
+        /* Map container */
+        #map-container {
+            flex: 1;
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        #search-box {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: 80%;
+            max-width: 400px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Bot page content */
+        #bot-page {
+            justify-content: center;
+            align-items: center;
+            background-color: #121212;
+            color: #1DB954;
+        }
+
+        #bot-page button {
+            margin-top: 20px;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: 1px solid #1DB954;
+            background-color: #272727;
+            color: #1DB954;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Map Page -->
+    <div id="map-page" class="page active">
+        <header>
+            <button onclick="navigateTo('bot-page')">Go to Bot</button>
+            <div class="title">Omnisport</div>
+        </header>
+        <div id="map-container">
+            <input
+                type="text"
+                id="search-box"
+                placeholder="Search for a location (e.g., Gym, Beach)"
+            />
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <!-- Bot Page -->
+    <div id="bot-page" class="page">
+        <header>
+            <button onclick="navigateTo('map-page')">Go Back</button>
+            <div class="title">Bot Page</div>
+        </header>
+        <div>
+            <h1>Welcome to the Bot Page!</h1>
+        </div>
+    </div>
+
+    <!-- Load Leaflet -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <!-- Firebase compat SDKs (global namespace) -->
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+
+    <!-- Your custom JavaScript -->
+    <script src="map.js" defer></script>
+    <script>
+        // Navigation function
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        // Ensure the map initializes only when the map page is active
+        function initializeMap() {
+            const map = L.map('map').setView([51.505, -0.09], 13); // Example coordinates
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19
+            }).addTo(map);
+        }
+
+        window.onload = () => {
+            if (document.getElementById('map-page').classList.contains('active')) {
+                initializeMap();
+            }
+        };
+    </script>
+</body>
+</html>

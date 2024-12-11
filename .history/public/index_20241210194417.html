@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omnisport</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        /* General page styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Pages container */
+        .page {
+            display: none; /* Hide all pages by default */
+            width: 100%;
+            height: 100%;
+        }
+
+        .page.active {
+            display: flex; /* Show only the active page */
+            flex-direction: column;
+        }
+
+        /* Header styling */
+        header {
+            background-color: #272727;
+            color: #1DB954;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        header .title {
+            flex: 1;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        header button {
+            background-color: transparent;
+            color: #1DB954;
+            border: 1px solid #1DB954;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        header button:hover {
+            background-color: #1DB954;
+            color: #121212;
+        }
+
+        /* Map container */
+        #map-container {
+            flex: 1;
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        #search-box {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: 80%;
+            max-width: 400px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Bot page content */
+        #bot-page {
+            justify-content: center;
+            align-items: center;
+            background-color: #121212;
+            color: #1DB954;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #chat-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            width: 100%;
+            max-width: 800px;
+            height: 100%;
+            padding: 10px;
+            background-color: #272727;
+            border-radius: 10px;
+        }
+
+        #chat-box {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #121212;
+            border-radius: 10px;
+            max-height: 70%;
+        }
+
+        /* Message Bubble */
+        .message {
+            padding: 10px;
+            border-radius: 10px;
+            margin: 5px 0;
+            max-width: 60%;
+        }
+
+        .user-message {
+            background-color: #1DB954;
+            color: #121212;
+            align-self: flex-end;
+        }
+
+        .bot-message {
+            background-color: #272727;
+            color: #1DB954;
+            align-self: flex-start;
+        }
+
+        /* Input and Button */
+        #user-input {
+            padding: 15px;
+            background-color: #121212;
+            color: #1DB954;
+            border: 1px solid #1DB954;
+            border-radius: 5px;
+            width: 75%;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #1DB954;
+            color: #121212;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #121212;
+            color: #1DB954;
+        }
+
+        #chat-controls {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            #chat-container {
+                width: 100%;
+                height: 100%;
+                padding: 5px;
+            }
+
+            #user-input {
+                width: 65%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Map Page -->
+    <div id="map-page" class="page active">
+        <header>
+            <button onclick="navigateTo('bot-page')">Go to Bot</button>
+            <div class="title">Omnisport</div>
+        </header>
+        <div id="map-container">
+            <input
+                type="text"
+                id="search-box"
+                placeholder="Search for a location (e.g., Gym, Beach)"
+            />
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <!-- Bot Page -->
+    <div id="bot-page" class="page">
+        <header>
+            <div class="title">Omnisport</div>
+            <button onclick="navigateTo('map-page')">Go to Map</button>
+        </header>
+        <div id="chat-container">
+            <div id="chat-box">
+                <!-- Messages will appear here -->
+            </div>
+            <div id="chat-controls">
+                <input
+                    type="text"
+                    id="user-input"
+                    placeholder="Type a message..."
+                    onkeydown="if(event.key === 'Enter'){ sendMessage(); }"
+                />
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const userInput = document.getElementById('user-input');
+
+        function appendMessage(content, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.classList.add(sender);
+            messageDiv.textContent = content;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function sendMessage() {
+            const userMessage = userInput.value.trim();
+            if (!userMessage) return;
+
+            appendMessage(userMessage, 'user-message');
+            userInput.value = '';
+
+            // Send the message to the Flask backend
+            fetch('/api/bot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: userMessage })
+            })
+            .then(response => response.json())
+            .then(data => {
+                appendMessage(data.reply, 'bot-message');
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                appendMessage('Sorry, I could not process your message.', 'bot-message');
+            });
+        }
+
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+    </script>
+</body>
+</html>

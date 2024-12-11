@@ -1,0 +1,123 @@
+<!-- Bot Page -->
+<div id="bot-page" class="page">
+    <header>
+        <button onclick="navigateTo('map-page')">Go Back</button>
+        <div class="title">Bot Page</div>
+    </header>
+    <div id="chat-container">
+        <div id="chat-box">
+            <!-- Messages will appear here -->
+        </div>
+        <input
+            type="text"
+            id="user-input"
+            placeholder="Type a message..."
+            onkeydown="if(event.key === 'Enter'){ sendMessage(); }"
+        />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<style>
+    /* Chat Container */
+    #chat-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 20px;
+        height: 400px;
+        background-color: #121212;
+        color: #1DB954;
+    }
+
+    /* Chat Box */
+    #chat-box {
+        flex: 1;
+        overflow-y: auto;
+        margin-bottom: 10px;
+        padding-right: 10px;
+    }
+
+    /* Message Bubble */
+    .message {
+        padding: 10px;
+        border-radius: 10px;
+        margin: 5px 0;
+        max-width: 60%;
+    }
+
+    .user-message {
+        background-color: #1DB954;
+        color: #121212;
+        align-self: flex-end;
+    }
+
+    .bot-message {
+        background-color: #272727;
+        color: #1DB954;
+        align-self: flex-start;
+    }
+
+    /* Input and Button */
+    #user-input {
+        padding: 10px;
+        background-color: #272727;
+        color: #1DB954;
+        border: 1px solid #1DB954;
+        border-radius: 5px;
+        width: 85%;
+        margin-bottom: 10px;
+    }
+
+    button {
+        padding: 10px 15px;
+        background-color: #1DB954;
+        color: #121212;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    button:hover {
+        background-color: #121212;
+        color: #1DB954;
+    }
+</style>
+
+<script>
+    const chatBox = document.getElementById('chat-box');
+    const userInput = document.getElementById('user-input');
+
+    function appendMessage(content, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message');
+        messageDiv.classList.add(sender);
+        messageDiv.textContent = content;
+        chatBox.appendChild(messageDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function sendMessage() {
+        const userMessage = userInput.value.trim();
+        if (!userMessage) return;
+
+        appendMessage(userMessage, 'user-message');
+        userInput.value = '';
+
+        // Send the message to the Flask backend
+        fetch('/api/bot', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: userMessage })
+        })
+        .then(response => response.json())
+        .then(data => {
+            appendMessage(data.reply, 'bot-message');
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            appendMessage('Sorry, I could not process your message.', 'bot-message');
+        });
+    }
+</script>

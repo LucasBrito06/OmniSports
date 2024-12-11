@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Map with Firebase</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map { height: 600px; }
+        #controls { margin: 10px; }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <div style="padding: 10px; text-align: center;">
+            <input
+                type="text"
+                id="search-box"
+                placeholder="Search for a location (e.g., Gym, Beach)"
+                style="width: 300px; padding: 5px;"
+            />
+        </div>
+        <div id="map"></div>
+    </div>
+
+    <!-- Load Leaflet -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <!-- Firebase compat SDKs (global namespace) -->
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+
+    <!-- Your custom JavaScript -->
+    <script src="map.js" defer></script>
+</body>
+</html>

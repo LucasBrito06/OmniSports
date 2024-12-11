@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omnisport</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        /* Global reset */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+            background-color: #121212; /* Spotify dark background */
+        }
+
+        /* Controls container */
+        #controls {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header styling */
+        header {
+            position: sticky;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: #272727; /* Dark Spotify background */
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Title styling */
+        .title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            margin: 0;
+            font-size: 35px;
+            font-weight: bold;
+            text-align: center;
+            color: #1DB954; /* Spotify green text */
+        }
+
+        /* Back button styling */
+        .back-button {
+            margin-right: auto;
+            background-color: #272727; /* Dark Spotify background */
+            color: #1DB954; /* Spotify green text */
+            border: 1px solid #1DB954; /* Green border */
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        /* Back button hover effect */
+        .back-button:hover {
+            background-color: #1DB954; /* Green hover background */
+            color: #121212; /* Dark text on hover */
+        }
+
+        /* Search box styling */
+        #search-box {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            padding: 10px;
+            z-index: 1000;
+            border: 1px solid #1DB954; /* Green border */
+            border-radius: 5px;
+            background-color: #121212; /* Dark background */
+            color: #fff; /* White text */
+        }
+
+        #search-box::placeholder {
+            color: #bbb; /* Subtle placeholder text */
+        }
+
+        /* Map container styling */
+        #map {
+            flex: 1; /* Makes map take up remaining space */
+            height: 100%;
+            width: 100%;
+            position: relative;
+            z-index: 0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 25px; /* Slightly smaller font for mobile */
+            }
+
+            .back-button {
+                font-size: 14px;
+                padding: 5px 8px;
+            }
+
+            #search-box {
+                top: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <header>
+            <button class="back-button" onclick="goBack()">BOT</button>
+            <div class="title">Omnisport</div>
+        </header>
+        <input
+            type="text"
+            id="search-box"
+            placeholder="Search for a location (e.g., Gym, Beach)"
+        />
+        <div id="map"></div>
+    </div>
+
+    <!-- Load Leaflet -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <!-- Firebase compat SDKs (global namespace) -->
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+
+    <!-- Your custom JavaScript -->
+    <script src="map.js" defer></script>
+
+    <script>
+        // Back button functionality
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>
